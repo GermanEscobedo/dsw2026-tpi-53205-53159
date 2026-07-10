@@ -1,6 +1,9 @@
 # Trabajo Práctico Integrador
 ## Desarrollo de Software 2026
 
+### Escobedo Lautaro German - Legajo 53205
+### Castro Facundo Leonel - Legajo 53159
+
 Acceso al [documento](https://frtutneduar-my.sharepoint.com/:b:/g/personal/franciscovicente_doc_frt_utn_edu_ar/IQD-5kaAARqnT5eL7EnPMCPgAX2LFXXX6e3p-u1C43z5rsQ?e=lbbpnz)
 
 Instrucciones:
