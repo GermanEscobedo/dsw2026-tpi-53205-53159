@@ -1,4 +1,5 @@
-﻿using Dsw2026Tpi.Domain.Entities; 
+﻿
+using Dsw2026Tpi.Domain.Entities; 
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -24,3 +25,5 @@ public class Dsw2026TpiDbContext : DbContext
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }
+
+

@@ -1,7 +1,9 @@
 using Dsw2026Tpi.Api.Configurations;
 using Dsw2026Tpi.Api.Middlewares;
+using Dsw2026Tpi.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace Dsw2026Tpi.Api;
@@ -22,6 +24,9 @@ public class Program
             var builder = WebApplication.CreateBuilder(args);
 
             //Configuraciones personalizadas
+            
+            builder.Services.AddDbContext<Dsw2026TpiDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.AddSerilogConfiguration();
             builder.Services.AddAppIdentity();
             builder.Services.AddAppAuthentication(builder.Configuration);
