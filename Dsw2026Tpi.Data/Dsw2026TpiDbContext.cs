@@ -12,6 +12,7 @@ public class Dsw2026TpiDbContext : DbContext
     public DbSet<Speciality> Specialities { get; set; }
     public DbSet<Patient> Patients { get; set; } 
 
+
     public Dsw2026TpiDbContext(DbContextOptions<Dsw2026TpiDbContext> options) :
         base(options)
     {

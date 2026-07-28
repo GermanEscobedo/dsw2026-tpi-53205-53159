@@ -1,31 +1,33 @@
 ﻿namespace Dsw2026Tpi.Domain.Entities;
 
-public class Doctor: EntityBase
+public class Doctor : EntityBase
 {
-    public string Name { get; init; }
-    public string LicenseNumber { get; init; }
-    public bool IsActive { get; private set; }
-    public Guid? SpecialityId { get; set; }
+   
+    public string FirstName { get; private set; }
+    public string LastName { get; private set; }
+    public string Email { get; private set; }
+    public string LicenseNumber { get; private set; }
+
+    public Guid SpecialityId { get; private set; }
+
+    // Propiedad de navegación (Le dice a EF Core que busque la entidad real)
     public Speciality? Speciality { get; private set; }
 
-    #region Constructor for EF
-#pragma warning disable CS8618
-    private Doctor()
+    public Doctor(string firstName, string lastName, string email, string licenseNumber, Guid specialityId)
     {
-    }
-#pragma warning restore CS8618
-    #endregion
-
-    public Doctor(string name, string licenseNumber, Speciality speciality, Guid? id = null) : base(id)
-    {
-        Name = name;
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
         LicenseNumber = licenseNumber;
-        Speciality = speciality;
-        IsActive = true;
+        SpecialityId = specialityId;
     }
 
-    public void Deactivate()
+    public void Update(string firstName, string lastName, string email, string licenseNumber, Guid specialityId)
     {
-        IsActive = false;
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        LicenseNumber = licenseNumber;
+        SpecialityId = specialityId;
     }
 }
