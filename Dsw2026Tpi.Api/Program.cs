@@ -30,6 +30,7 @@ public class Program
             builder.Services.AddDbContext<Dsw2026TpiDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IPatientService, PatientService>();
+            builder.Services.AddScoped<ISpecialityService, SpecialityService>();
             builder.AddSerilogConfiguration();
             builder.Services.AddAppIdentity();
             builder.Services.AddAppAuthentication(builder.Configuration);
