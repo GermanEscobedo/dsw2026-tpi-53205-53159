@@ -1,16 +1,18 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
 
 [Route("api/patients")]
+[Authorize(Roles = "Admin,Doctor")]
 public class PatientController : ControllerBase
 {
     private readonly IPatientService _patientService;
 
-    // Inyectamos el servicio que creamos en el paso anterior
+    
     public PatientController(IPatientService patientService)
     {
         _patientService = patientService;
