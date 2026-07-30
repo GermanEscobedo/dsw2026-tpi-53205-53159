@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
-[ApiController]
+
 [Route("api/specialities")]
 public class SpecialityController : ControllerBase
 {

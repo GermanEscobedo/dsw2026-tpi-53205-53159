@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
-[ApiController]
-[Route("api/doctor-availabilities")] // Ruta explícita requerida
+[Route("api/doctor-availabilities")] 
 public class DoctorAvailabilityController : ControllerBase
 {
     private readonly IDoctorAvailabilityService _service;
