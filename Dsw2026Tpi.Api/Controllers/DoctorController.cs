@@ -1,17 +1,19 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
 
 [Route("api/doctors")]
+[Authorize]
 public class DoctorController : ControllerBase
 {
-    // 1. Declaramos el campo privado aquí
+   
     private readonly IDoctorService _doctorService;
 
-    // 2. Lo inyectamos a través del constructor
+  
     public DoctorController(IDoctorService doctorService)
     {
         _doctorService = doctorService;
@@ -36,6 +38,7 @@ public class DoctorController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] DoctorModel.Request model)
     {
         var newDoctor = await _doctorService.CreateAsync(model);
@@ -58,6 +61,7 @@ public class DoctorController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(Guid id)
     {
         try

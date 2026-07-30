@@ -1,11 +1,13 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
 
 [Route("api/appointments")]
+[Authorize]
 public class AppointmentController : ControllerBase
 {
     private readonly IAppointmentService _service;
@@ -16,6 +18,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,Doctor")]
     public async Task<IActionResult> GetAll()
     {
         var appointments = await _service.GetAllAsync();
@@ -48,6 +51,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Patient,Admin")]
     public async Task<IActionResult> Create([FromBody] AppointmentModel.Request model)
     {
         try

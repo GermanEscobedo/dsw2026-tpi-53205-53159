@@ -1,11 +1,13 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
 
-[Route("api/medical-records")] 
+[Route("api/medical-records")]
+[Authorize(Roles = "Admin,Doctor")]
 public class MedicalRecordController : ControllerBase
 {
     private readonly IMedicalRecordService _service;
