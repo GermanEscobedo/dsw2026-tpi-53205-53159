@@ -84,6 +84,32 @@ public class AppointmentService : IAppointmentService
         var doctorExists = await _context.Doctors.AnyAsync(d => d.Id == model.DoctorId);
         if (!doctorExists) throw new Exception("El médico especificado no existe.");
 
+        var dayOfWeek = model.AppointmentDateTime.DayOfWeek;
+        var appointmentTime = model.AppointmentDateTime.TimeOfDay;
+
+        var hasAvailability = await _context.DoctorAvailabilities.AnyAsync(a =>
+            a.DoctorId == model.DoctorId &&
+            a.DayOfWeek == dayOfWeek &&
+            appointmentTime >= a.StartTime &&
+            appointmentTime <= a.EndTime
+        );
+
+        if (!hasAvailability)
+        {
+            throw new Exception("El médico no cuenta con disponibilidad horaria en el día y horario seleccionado.");
+        }
+
+        var conflictiveAppointment = await _context.Appointments.AnyAsync(a =>
+            a.DoctorId == model.DoctorId &&
+            a.AppointmentDateTime == model.AppointmentDateTime &&
+            !a.IsCancelled
+        );
+
+        if (conflictiveAppointment)
+        {
+            throw new Exception("El médico ya tiene un turno reservado en ese mismo horario.");
+        }
+
         var appointment = new Appointment(model.PatientId, model.DoctorId, model.AppointmentDateTime, model.Reason);
 
         await _context.Appointments.AddAsync(appointment);
@@ -129,4 +155,4 @@ public class AppointmentService : IAppointmentService
         _context.Appointments.Remove(appointment);
         await _context.SaveChangesAsync();
     }
-}
+}   
