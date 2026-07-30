@@ -34,6 +34,7 @@ public class Program
             builder.Services.AddScoped<IDoctorService, DoctorService>();
             builder.Services.AddScoped<IDoctorAvailabilityService, DoctorAvailabilityService>();
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+            builder.Services.AddScoped<Dsw2026Tpi.Application.Interfaces.IAuthenticationService, Dsw2026Tpi.Application.Services.AuthenticationService>();
             builder.AddSerilogConfiguration();
             builder.Services.AddAppIdentity();
             builder.Services.AddAppAuthentication(builder.Configuration);

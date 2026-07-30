@@ -4,8 +4,10 @@ using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.CrossCutting.Helpers;
 using Dsw2026Tpi.CrossCutting.Identity;
 using Dsw2026Tpi.CrossCutting.Resources;
+using Dsw2026Tpi.Data;
 using Dsw2026Tpi.Data.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Dsw2026Tpi.Application.Services;
@@ -17,18 +19,22 @@ public class AuthenticationService : IAuthenticationService
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly JwtService _jwtService;
     private readonly ILogger<AuthenticationService> _logger;
+    private readonly Dsw2026TpiDbContext _context; 
 
-    public AuthenticationService(UserManager<ApplicationUser> userManager,
+    public AuthenticationService(
+        UserManager<ApplicationUser> userManager,
         ISignInService signInManager,
         RoleManager<IdentityRole> roleManager,
         JwtService jwtService,
-        ILogger<AuthenticationService> logger)
+        ILogger<AuthenticationService> logger,
+        Dsw2026TpiDbContext context) 
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
         _jwtService = jwtService;
         _logger = logger;
+        _context = context;
     }
 
     public async Task<LoginAdminModel.Response> LoginAdmin(LoginAdminModel.Request request)
@@ -45,7 +51,7 @@ public class AuthenticationService : IAuthenticationService
 
         var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
 
-        var token  = _jwtService.GenerateToken(user.UserName!, role);
+        var token = _jwtService.GenerateToken(user.UserName!, role);
 
         return new LoginAdminModel.Response(
             token,
@@ -53,9 +59,33 @@ public class AuthenticationService : IAuthenticationService
         );
     }
 
-    public async Task<LoginPatientModel.Response> LoginPatient(LoginPatientModel.Response request)
+    public async Task<LoginPatientModel.Response> LoginPatient(LoginPatientModel.Request request)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            _logger.LogError("Intento de login de paciente fallido (Usuario no encontrado): {Email}", request.Email);
+            throw new AuthenticationException();
+        }
+
+        var patient = await _context.Patients
+    .FirstOrDefaultAsync(p => p.Email == request.Email && p.Dni == request.Dni);
+
+        if (patient == null)
+        {
+            _logger.LogError("Intento de login de paciente fallido (DNI incorrecto o no coincide): {Email}", request.Email);
+            throw new AuthenticationException();
+        }
+
+        var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "Patient";
+        var token = _jwtService.GenerateToken(user.UserName!, role);
+
+        _logger.LogInformation("Paciente logueado exitosamente: {Email}", request.Email);
+
+        return new LoginPatientModel.Response(
+            token,
+            role
+        );
     }
 
     public async Task<RegisterModel.Response> Register(RegisterModel.Request request)
@@ -75,8 +105,8 @@ public class AuthenticationService : IAuthenticationService
 
         if (!result.Succeeded) throw new ConflictException(nameof(ErrorCodes.REGISTER_USER_CONFLICT),
             ErrorCodes.REGISTER_USER_CONFLICT)
-                .WithDetail(result.Errors.Select(e => (e.Code, e.Description)));
-       
+            .WithDetail(result.Errors.Select(e => (e.Code, e.Description)));
+
         _ = await _userManager.AddToRoleAsync(user, Roles.Administrator);
 
         _logger.LogInformation("Usuario registrado: {Email}", request.Email);
