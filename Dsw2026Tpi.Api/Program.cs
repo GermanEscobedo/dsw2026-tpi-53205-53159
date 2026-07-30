@@ -33,6 +33,7 @@ public class Program
             builder.Services.AddScoped<ISpecialityService, SpecialityService>();
             builder.Services.AddScoped<IDoctorService, DoctorService>();
             builder.Services.AddScoped<IDoctorAvailabilityService, DoctorAvailabilityService>();
+            builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.AddSerilogConfiguration();
             builder.Services.AddAppIdentity();
             builder.Services.AddAppAuthentication(builder.Configuration);
