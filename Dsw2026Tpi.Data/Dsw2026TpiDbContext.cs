@@ -10,9 +10,9 @@ public class Dsw2026TpiDbContext : DbContext
     
     public DbSet<Doctor> Doctors { get; set; }
     public DbSet<Speciality> Specialities { get; set; }
-    public DbSet<Patient> Patients { get; set; } 
+    public DbSet<Patient> Patients { get; set; }
 
-
+    public DbSet<DoctorAvailability> DoctorAvailabilities => Set<DoctorAvailability>();
     public Dsw2026TpiDbContext(DbContextOptions<Dsw2026TpiDbContext> options) :
         base(options)
     {
@@ -22,8 +22,9 @@ public class Dsw2026TpiDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-       
+
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
     }
 }
 
