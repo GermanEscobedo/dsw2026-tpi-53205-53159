@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dsw2026Tpi.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")] // Esto hace que la URL sea /api/patient
+[Route("api/patients")]
 public class PatientController : ControllerBase
 {
     private readonly IPatientService _patientService;

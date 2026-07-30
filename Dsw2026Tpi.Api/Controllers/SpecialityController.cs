@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dsw2026Tpi.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")] // Esto generará la URL base: /api/speciality
+[Route("api/specialities")]
 public class SpecialityController : ControllerBase
 {
     private readonly ISpecialityService _specialityService;
