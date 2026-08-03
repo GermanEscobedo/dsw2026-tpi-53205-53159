@@ -13,6 +13,8 @@ public class Dsw2026TpiDbContext : DbContext
     public DbSet<Patient> Patients { get; set; }
 
     public DbSet<DoctorAvailability> DoctorAvailabilities => Set<DoctorAvailability>();
+    public DbSet<Appointment> Appointments => Set<Appointment>();
+    public DbSet<MedicalRecord> MedicalRecords => Set<MedicalRecord>();
     public Dsw2026TpiDbContext(DbContextOptions<Dsw2026TpiDbContext> options) :
         base(options)
     {

@@ -34,7 +34,6 @@ public class Patient : EntityBase
 
     public void Update(string firstName, string lastName, string email, string dni, string phoneNumber)
     {
-        // Aquí la entidad sí tiene permiso para modificarse a sí misma
         FirstName = firstName;
         LastName = lastName;
         Email = email;

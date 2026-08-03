@@ -6,6 +6,7 @@ using Dsw2026Tpi.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using AspNetCoreRateLimit;
 using Serilog;
 
 namespace Dsw2026Tpi.Api;
@@ -14,7 +15,6 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        // Inicializar con un logger simple antes de construir el host
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .CreateBootstrapLogger();
@@ -25,13 +25,19 @@ public class Program
 
             var builder = WebApplication.CreateBuilder(args);
 
-            //Configuraciones personalizadas
-            
+
             builder.Services.AddDbContext<Dsw2026TpiDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IPatientService, PatientService>();
             builder.Services.AddScoped<ISpecialityService, SpecialityService>();
             builder.Services.AddScoped<IDoctorService, DoctorService>();
+            builder.Services.AddScoped<IDoctorAvailabilityService, DoctorAvailabilityService>();
+            builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+            builder.Services.AddScoped<Dsw2026Tpi.Application.Interfaces.IAuthenticationService, Dsw2026Tpi.Application.Services.AuthenticationService>();
+            builder.Services.AddMemoryCache();
+            builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));
+            builder.Services.AddInMemoryRateLimiting();
+            builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             builder.AddSerilogConfiguration();
             builder.Services.AddAppIdentity();
             builder.Services.AddAppAuthentication(builder.Configuration);
@@ -44,6 +50,12 @@ public class Program
 
 
             var app = builder.Build();
+
+            // Ejecutar el Seeder de la base de datos al iniciar
+            using (var scope = app.Services.CreateScope())
+            {
+                await Dsw2026Tpi.Data.Seeders.DatabaseSeeder.SeedAsync(scope.ServiceProvider);
+            }
 
             app.UseSerilogRequestLogging();
 
@@ -58,6 +70,7 @@ public class Program
             }
 
             app.UseAuthentication();
+            app.UseIpRateLimiting();
             app.UseAuthorization();
             app.UseCors();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -85,4 +98,3 @@ public class Program
         }
     }
 }
-
