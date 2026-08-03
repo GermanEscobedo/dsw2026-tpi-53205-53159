@@ -17,4 +17,9 @@ public class AppointmentModel
         string? Reason,
         bool IsCancelled
     );
+    public record PatientDetailResponse(string Dni, string FullName);
+    public record SpecialtyDetailResponse(Guid SpecialtyId, string Name);
+    public record DoctorDetailResponse(Guid DoctorId, string Name, SpecialtyDetailResponse Specialty);
+    public record SearchItemResponse(Guid AppointmentsId, string AppointmentsStatus, PatientDetailResponse Patient, DoctorDetailResponse Doctor);
+    public record SearchResponse(int PageSize, int PageIndex, IEnumerable<SearchItemResponse> Data, int Total);
 }
