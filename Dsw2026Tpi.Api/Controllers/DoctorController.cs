@@ -8,7 +8,7 @@ namespace Dsw2026Tpi.Api.Controllers;
 
 [Route("api/doctors")]
 [Authorize]
-public class DoctorController : ControllerBase
+public class DoctorController : AppController
 {
    
     private readonly IDoctorService _doctorService;

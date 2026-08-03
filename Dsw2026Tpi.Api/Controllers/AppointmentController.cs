@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
-
 [Route("api/appointments")]
 [Authorize]
 public class AppointmentController : ControllerBase
@@ -19,10 +18,19 @@ public class AppointmentController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin,Doctor")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1)
     {
         var appointments = await _service.GetAllAsync();
         return Ok(appointments);
+    }
+
+    [HttpGet("search")]
+    [Authorize(Roles = "Admin,Doctor,Patient")]
+    public async Task<IActionResult> Search([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1)
+    {
+       
+        var result = await _service.SearchAsync(pageSize, pageIndex);
+        return Ok(result);
     }
 
     [HttpGet("{id:guid}")]
@@ -71,7 +79,8 @@ public class AppointmentController : ControllerBase
         try
         {
             await _service.UpdateAsync(id, model);
-            return NoContent();
+            var updatedAppointment = await _service.GetByIdAsync(id);
+            return Ok(updatedAppointment); 
         }
         catch (Exception ex)
         {
@@ -85,7 +94,8 @@ public class AppointmentController : ControllerBase
         try
         {
             await _service.CancelAsync(id);
-            return NoContent();
+            var canceledAppointment = await _service.GetByIdAsync(id);
+            return Ok(canceledAppointment);
         }
         catch (Exception ex)
         {
@@ -99,7 +109,7 @@ public class AppointmentController : ControllerBase
         try
         {
             await _service.DeleteAsync(id);
-            return NoContent();
+            return Ok("ok"); 
         }
         catch (Exception ex)
         {
