@@ -201,17 +201,17 @@ public class AppointmentService : IAppointmentService
         var query = _context.Appointments
             .Include(a => a.Patient)
             .Include(a => a.Doctor)
-                .ThenInclude(d => d.Speciality)
+                .ThenInclude(d => d!.Speciality)
             .AsQueryable();
 
         if (specialtyId.HasValue)
-            query = query.Where(a => a.Doctor.SpecialityId == specialtyId.Value);
+            query = query.Where(a => a.Doctor!.SpecialityId == specialtyId.Value);
 
         if (doctorId.HasValue)
             query = query.Where(a => a.DoctorId == doctorId.Value);
 
         if (!string.IsNullOrWhiteSpace(dni))
-            query = query.Where(a => a.Patient.Dni == dni);
+            query = query.Where(a => a.Patient!.Dni == dni);
 
         if (date.HasValue)
             query = query.Where(a => a.AppointmentDateTime.Date == date.Value.Date);
@@ -226,13 +226,13 @@ public class AppointmentService : IAppointmentService
         var data = appointments.Select(a => new AppointmentModel.SearchItemResponse(
              a.Id,
              a.IsCancelled ? "CANCELLED" : "BOOKED",
-             new AppointmentModel.PatientDetailResponse(a.Patient.Dni, $"{a.Patient.FirstName} {a.Patient.LastName}"),
+             new AppointmentModel.PatientDetailResponse(a.Patient!.Dni, $"{a.Patient.FirstName} {a.Patient.LastName}"),
              new AppointmentModel.DoctorDetailResponse(
-                 a.Doctor.Id,
+                 a.Doctor!.Id,
                  $"{a.Doctor.FirstName} {a.Doctor.LastName}",
                  new AppointmentModel.SpecialtyDetailResponse(
                      a.Doctor.Speciality!.Id,
-                     a.Doctor.Speciality.Name
+                     a.Doctor.Speciality!.Name
                  )
              )
          ));

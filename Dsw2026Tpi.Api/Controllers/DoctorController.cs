@@ -52,7 +52,8 @@ public class DoctorController : AppController
         try
         {
             await _doctorService.UpdateAsync(id, model);
-            return NoContent();
+            var updated = await _doctorService.GetByIdAsync(id);
+            return Ok(updated);
         }
         catch (Exception ex)
         {
@@ -67,7 +68,7 @@ public class DoctorController : AppController
         try
         {
             await _doctorService.DeleteAsync(id);
-            return NoContent();
+            return Ok("ok");
         }
         catch (Exception ex)
         {

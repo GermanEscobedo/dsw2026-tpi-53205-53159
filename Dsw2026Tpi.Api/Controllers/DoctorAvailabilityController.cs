@@ -1,5 +1,6 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Dsw2026Tpi.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers;
@@ -59,7 +60,8 @@ public class DoctorAvailabilityController : ControllerBase
         try
         {
             await _service.UpdateAsync(id, model);
-            return NoContent();
+            var updated = await _service.GetByIdAsync(id);
+            return Ok(updated);
         }
         catch (Exception ex)
         {
@@ -73,7 +75,7 @@ public class DoctorAvailabilityController : ControllerBase
         try
         {
             await _service.DeleteAsync(id);
-            return NoContent();
+            return Ok("ok");
         }
         catch (Exception ex)
         {

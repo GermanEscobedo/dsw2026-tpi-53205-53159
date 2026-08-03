@@ -10,7 +10,7 @@ public class SpecialityController : ControllerBase
 {
     private readonly ISpecialityService _specialityService;
 
-    // Inyectamos nuestro servicio de especialidades
+   
     public SpecialityController(ISpecialityService specialityService)
     {
         _specialityService = specialityService;
@@ -39,7 +39,7 @@ public class SpecialityController : ControllerBase
     {
         var newSpeciality = await _specialityService.CreateAsync(model);
 
-        // Retorna 201 Created indicando dónde consultar el nuevo recurso
+        // Retorna 201 
         return CreatedAtAction(nameof(GetById), new { id = newSpeciality.Id }, newSpeciality);
     }
 
@@ -49,7 +49,8 @@ public class SpecialityController : ControllerBase
         try
         {
             await _specialityService.UpdateAsync(id, model);
-            return NoContent(); // 204 No Content (Éxito, no hay nada que devolver en el body)
+            var updated = await _specialityService.GetByIdAsync(id);
+            return Ok(updated);
         }
         catch (Exception ex)
         {
@@ -63,7 +64,7 @@ public class SpecialityController : ControllerBase
         try
         {
             await _specialityService.DeleteAsync(id);
-            return NoContent();
+            return Ok("ok");
         }
         catch (Exception ex)
         {
