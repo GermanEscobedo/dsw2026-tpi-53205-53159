@@ -185,4 +185,16 @@ public class AppointmentService : IAppointmentService
         _context.Appointments.Remove(appointment);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<object> SearchAsync(int pageSize, int pageIndex)
+    {
+        var total = await _context.Appointments.CountAsync();
+        var data = await _context.Appointments
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        return new { pageSize, pageIndex, data, total };
+    }
+
+
 }   
