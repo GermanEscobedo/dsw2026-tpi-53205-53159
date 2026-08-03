@@ -7,7 +7,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Dsw2026Tpi.Application.Services;
 
 public class DoctorAvailabilityService : IDoctorAvailabilityService
+
 {
+ 
     private readonly Dsw2026TpiDbContext _context;
 
     public DoctorAvailabilityService(Dsw2026TpiDbContext context)
@@ -59,10 +61,15 @@ public class DoctorAvailabilityService : IDoctorAvailabilityService
 
     public async Task<DoctorAvailabilityModel.Response> CreateAsync(DoctorAvailabilityModel.Request model)
     {
-        
         var doctorExists = await _context.Doctors.AnyAsync(d => d.Id == model.DoctorId);
         if (!doctorExists) throw new Exception("El médico especificado no existe.");
 
+        if (model.StartTime >= model.EndTime)
+            throw new Exception("La hora de inicio debe ser menor a la hora de fin.");
+
+        var holidays = LoadHolidays();
+
+        
         var availability = new DoctorAvailability(model.DoctorId, model.DayOfWeek, model.StartTime, model.EndTime);
 
         await _context.DoctorAvailabilities.AddAsync(availability);
@@ -82,6 +89,9 @@ public class DoctorAvailabilityService : IDoctorAvailabilityService
         var availability = await _context.DoctorAvailabilities.FindAsync(id);
         if (availability == null) throw new Exception("Disponibilidad no encontrada.");
 
+        if (model.StartTime >= model.EndTime)
+            throw new Exception("La hora de inicio debe ser menor a la hora de fin.");
+
         availability.Update(model.DayOfWeek, model.StartTime, model.EndTime);
 
         _context.DoctorAvailabilities.Update(availability);
@@ -96,4 +106,23 @@ public class DoctorAvailabilityService : IDoctorAvailabilityService
         _context.DoctorAvailabilities.Remove(availability);
         await _context.SaveChangesAsync();
     }
+
+    private List<string> LoadHolidays()
+    {
+        var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Sources", "feriados.json");
+        if (!File.Exists(filePath))
+        {
+            
+            filePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Dsw2026Tpi.Data", "Sources", "feriados.json");
+        }
+
+        if (File.Exists(filePath))
+        {
+            var json = File.ReadAllText(filePath);
+            return System.Text.Json.JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+        }
+
+        return new List<string>();
+    }
+
 }
