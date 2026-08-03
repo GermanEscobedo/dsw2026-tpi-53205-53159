@@ -13,5 +13,6 @@ public interface IAppointmentService
     Task CancelAsync(Guid id);
     Task DeleteAsync(Guid id);
     Task<object> SearchAsync(int pageSize, int pageIndex);
+    Task<AppointmentModel.SearchResponse> SearchAsync(int pageSize, int pageIndex, Guid? specialtyId, Guid? doctorId, string? dni, DateTime? date);
 
 }

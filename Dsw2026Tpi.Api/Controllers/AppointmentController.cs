@@ -26,10 +26,15 @@ public class AppointmentController : ControllerBase
 
     [HttpGet("search")]
     [Authorize(Roles = "Admin,Doctor,Patient")]
-    public async Task<IActionResult> Search([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1)
+    public async Task<IActionResult> Search(
+          [FromQuery] int pageSize = 10,
+          [FromQuery] int pageIndex = 1,
+          [FromQuery] Guid? specialtyId = null,
+          [FromQuery] Guid? doctorId = null,
+          [FromQuery] string? dni = null,
+          [FromQuery] DateTime? date = null)
     {
-       
-        var result = await _service.SearchAsync(pageSize, pageIndex);
+        var result = await _service.SearchAsync(pageSize, pageIndex, specialtyId, doctorId, dni, date);
         return Ok(result);
     }
 

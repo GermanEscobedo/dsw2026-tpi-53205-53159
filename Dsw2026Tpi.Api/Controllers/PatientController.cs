@@ -31,7 +31,7 @@ public class PatientController : ControllerBase
         var patient = await _patientService.GetByIdAsync(id);
 
         if (patient == null)
-            return NotFound(); // Retorna 404 si no existe
+            return NotFound(); // Retorna 404 
 
         return Ok(patient);
     }
@@ -41,7 +41,7 @@ public class PatientController : ControllerBase
     {
         var newPatient = await _patientService.CreateAsync(model);
 
-        // Retorna 201 Created y dice en qué URL se puede consultar el nuevo paciente
+        // Retorna 201 
         return CreatedAtAction(nameof(GetById), new { id = newPatient.Id }, newPatient);
     }
 
@@ -51,11 +51,11 @@ public class PatientController : ControllerBase
         try
         {
             await _patientService.UpdateAsync(id, model);
-            return NoContent(); // Retorna 204 (Éxito, pero sin contenido para devolver)
+            return NoContent(); // Retorna 204 
         }
         catch (Exception ex)
         {
-            // Si el servicio tira error (ej. paciente no encontrado), devuelve 400 Bad Request
+            //  devuelve 400
             return BadRequest(new { message = ex.Message });
         }
     }

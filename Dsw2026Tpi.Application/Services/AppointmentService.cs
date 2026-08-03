@@ -196,5 +196,48 @@ public class AppointmentService : IAppointmentService
         return new { pageSize, pageIndex, data, total };
     }
 
+    public async Task<AppointmentModel.SearchResponse> SearchAsync(int pageSize, int pageIndex, Guid? specialtyId, Guid? doctorId, string? dni, DateTime? date)
+    {
+        var query = _context.Appointments
+            .Include(a => a.Patient)
+            .Include(a => a.Doctor)
+                .ThenInclude(d => d.Speciality)
+            .AsQueryable();
+
+        if (specialtyId.HasValue)
+            query = query.Where(a => a.Doctor.SpecialityId == specialtyId.Value);
+
+        if (doctorId.HasValue)
+            query = query.Where(a => a.DoctorId == doctorId.Value);
+
+        if (!string.IsNullOrWhiteSpace(dni))
+            query = query.Where(a => a.Patient.Dni == dni);
+
+        if (date.HasValue)
+            query = query.Where(a => a.AppointmentDateTime.Date == date.Value.Date);
+
+        var total = await query.CountAsync();
+
+        var appointments = await query
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        var data = appointments.Select(a => new AppointmentModel.SearchItemResponse(
+             a.Id,
+             a.IsCancelled ? "CANCELLED" : "BOOKED",
+             new AppointmentModel.PatientDetailResponse(a.Patient.Dni, $"{a.Patient.FirstName} {a.Patient.LastName}"),
+             new AppointmentModel.DoctorDetailResponse(
+                 a.Doctor.Id,
+                 $"{a.Doctor.FirstName} {a.Doctor.LastName}",
+                 new AppointmentModel.SpecialtyDetailResponse(
+                     a.Doctor.Speciality!.Id,
+                     a.Doctor.Speciality.Name
+                 )
+             )
+         ));
+
+        return new AppointmentModel.SearchResponse(pageSize, pageIndex, data, total);
+    }
 
 }   
