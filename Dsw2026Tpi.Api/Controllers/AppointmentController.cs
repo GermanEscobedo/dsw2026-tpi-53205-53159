@@ -28,7 +28,7 @@ public class AppointmentController : ControllerBase
     [Authorize(Roles = "Admin,Doctor,Patient")]
     public async Task<IActionResult> Search([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1)
     {
-        // Asegúrate de tener implementado el método de búsqueda paginada en el servicio
+       
         var result = await _service.SearchAsync(pageSize, pageIndex);
         return Ok(result);
     }
@@ -80,7 +80,7 @@ public class AppointmentController : ControllerBase
         {
             await _service.UpdateAsync(id, model);
             var updatedAppointment = await _service.GetByIdAsync(id);
-            return Ok(updatedAppointment); // Corregido: Retorna la entidad actualizada (Rev 1.4)
+            return Ok(updatedAppointment); 
         }
         catch (Exception ex)
         {
@@ -95,7 +95,7 @@ public class AppointmentController : ControllerBase
         {
             await _service.CancelAsync(id);
             var canceledAppointment = await _service.GetByIdAsync(id);
-            return Ok(canceledAppointment); // Corregido: Retorna la entidad actualizada (Rev 1.4)
+            return Ok(canceledAppointment);
         }
         catch (Exception ex)
         {
@@ -109,7 +109,7 @@ public class AppointmentController : ControllerBase
         try
         {
             await _service.DeleteAsync(id);
-            return Ok("ok"); // Corregido: HTTP 200 con el texto "ok" (Rev 1.4)
+            return Ok("ok"); 
         }
         catch (Exception ex)
         {

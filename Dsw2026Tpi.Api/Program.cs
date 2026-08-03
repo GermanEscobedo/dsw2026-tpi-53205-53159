@@ -51,7 +51,7 @@ public class Program
 
             var app = builder.Build();
 
-            // Ejecutar el Seeder de la base de datos al iniciar
+            
             using (var scope = app.Services.CreateScope())
             {
                 await Dsw2026Tpi.Data.Seeders.DatabaseSeeder.SeedAsync(scope.ServiceProvider);
