@@ -14,7 +14,6 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-        // Inicializar con un logger simple antes de construir el host
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .CreateBootstrapLogger();
@@ -25,8 +24,7 @@ public class Program
 
             var builder = WebApplication.CreateBuilder(args);
 
-            //Configuraciones personalizadas
-            
+
             builder.Services.AddDbContext<Dsw2026TpiDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddScoped<IPatientService, PatientService>();
@@ -47,6 +45,12 @@ public class Program
 
 
             var app = builder.Build();
+
+            // Ejecutar el Seeder de la base de datos al iniciar
+            using (var scope = app.Services.CreateScope())
+            {
+                await Dsw2026Tpi.Data.Seeders.DatabaseSeeder.SeedAsync(scope.ServiceProvider);
+            }
 
             app.UseSerilogRequestLogging();
 
@@ -88,4 +92,3 @@ public class Program
         }
     }
 }
-
