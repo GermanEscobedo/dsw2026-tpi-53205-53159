@@ -17,7 +17,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "Admin,Doctor")]
+    [Authorize(Roles = "Admin,Doctor,ADMINISTRADOR,Administrador")]
     public async Task<IActionResult> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1)
     {
         var appointments = await _service.GetAllAsync();
@@ -25,7 +25,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpGet("search")]
-    [Authorize(Roles = "Admin,Doctor,Patient")]
+    [Authorize(Roles = "Admin,Doctor,Patient,ADMINISTRADOR,Administrador,Paciente")]
     public async Task<IActionResult> Search(
           [FromQuery] int pageSize = 10,
           [FromQuery] int pageIndex = 1,
@@ -64,7 +64,7 @@ public class AppointmentController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "Patient,Admin")]
+    [Authorize(Roles = "Patient,Admin,ADMINISTRADOR,Administrador,Paciente")]
     public async Task<IActionResult> Create([FromBody] AppointmentModel.Request model)
     {
         try

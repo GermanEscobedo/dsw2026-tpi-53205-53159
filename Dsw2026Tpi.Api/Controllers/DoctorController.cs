@@ -38,7 +38,7 @@ public class DoctorController : AppController
     }
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Administrador,ADMINISTRADOR")]
     public async Task<IActionResult> Create([FromBody] DoctorModel.Request model)
     {
         var newDoctor = await _doctorService.CreateAsync(model);

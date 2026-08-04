@@ -16,6 +16,7 @@ public class MedicalRecord : EntityBase
     public string Treatment { get; private set; } = string.Empty;
     public string? Observations { get; private set; }
 
+
     public MedicalRecord(Guid patientId, Guid doctorId, Guid? appointmentId, DateTime consultationDate, string diagnosis, string treatment, string? observations)
     {
         PatientId = patientId;
@@ -25,6 +26,8 @@ public class MedicalRecord : EntityBase
         Diagnosis = diagnosis;
         Treatment = treatment;
         Observations = observations;
+        CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
     }
 
     public void Update(string diagnosis, string treatment, string? observations)
