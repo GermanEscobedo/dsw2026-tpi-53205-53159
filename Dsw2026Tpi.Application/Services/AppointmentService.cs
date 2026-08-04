@@ -84,6 +84,13 @@ public class AppointmentService : IAppointmentService
         var doctorExists = await _context.Doctors.AnyAsync(d => d.Id == model.DoctorId);
         if (!doctorExists) throw new Exception("El médico especificado no existe.");
 
+        var holidays = LoadHolidays();
+        var dateString = model.AppointmentDateTime.ToString("yyyy-MM-dd");
+        if (holidays.Contains(dateString))
+        {
+            throw new Exception("No es posible reservar turnos en fechas feriadas o no laborales.");
+        }
+
         var dayOfWeek = model.AppointmentDateTime.DayOfWeek;
         var appointmentTime = model.AppointmentDateTime.TimeOfDay;
 
@@ -238,6 +245,26 @@ public class AppointmentService : IAppointmentService
          ));
 
         return new AppointmentModel.SearchResponse(pageSize, pageIndex, data, total);
+
     }
+
+    private List<string> LoadHolidays()
+    {
+        var filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Sources", "feriados.json");
+        if (!File.Exists(filePath))
+        {
+            filePath = Path.Combine(Directory.GetCurrentDirectory(), "..", "Dsw2026Tpi.Data", "Sources", "feriados.json");
+        }
+
+        if (File.Exists(filePath))
+        {
+            var json = File.ReadAllText(filePath);
+            return System.Text.Json.JsonSerializer.Deserialize<List<string>>(json) ?? new List<string>();
+        }
+
+        return new List<string>();
+    }
+
+
 
 }   

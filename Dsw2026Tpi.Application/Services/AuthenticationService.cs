@@ -6,6 +6,7 @@ using Dsw2026Tpi.CrossCutting.Identity;
 using Dsw2026Tpi.CrossCutting.Resources;
 using Dsw2026Tpi.Data;
 using Dsw2026Tpi.Data.Identity;
+using Dsw2026Tpi.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -61,24 +62,59 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task<LoginPatientModel.Response> LoginPatient(LoginPatientModel.Request request)
     {
-        var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user == null)
-        {
-            _logger.LogError("Intento de login de paciente fallido (Usuario no encontrado): {Email}", request.Email);
-            throw new AuthenticationException();
-        }
+        if (!request.Email.IsEmailValid()) throw new AuthenticationException();
 
         var patient = await _context.Patients
-    .FirstOrDefaultAsync(p => p.Email == request.Email && p.Dni == request.Dni);
+            .FirstOrDefaultAsync(p => p.Email == request.Email || p.Dni == request.Dni);
+
+        var user = await _userManager.FindByEmailAsync(request.Email);
 
         if (patient == null)
         {
-            _logger.LogError("Intento de login de paciente fallido (DNI incorrecto o no coincide): {Email}", request.Email);
-            throw new AuthenticationException();
+            _logger.LogInformation("Primer acceso del paciente {Email}. Registrando automáticamente...", request.Email);
+
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = request.Email,
+                    Email = request.Email,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    _logger.LogError("Error al crear usuario Identity para paciente: {Email}", request.Email);
+                    throw new AuthenticationException();
+                }
+
+                await _userManager.AddToRoleAsync(user, Roles.Patient);
+            }
+
+            patient = new Patient(
+                request.Email.Split('@')[0],
+                "Paciente",
+                request.Email,
+                request.Dni,
+                "0000000000"
+            );
+
+            _context.Patients.Add(patient);
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            if (patient.Dni != request.Dni)
+            {
+                _logger.LogError("Intento de login de paciente fallido (DNI no coincide): {Email}", request.Email);
+                throw new AuthenticationException();
+            }
         }
 
-        var role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "Patient";
-        var token = _jwtService.GenerateToken(user.UserName!, role);
+        var role = (await _userManager.GetRolesAsync(user!)).FirstOrDefault() ?? Roles.Patient;
+        var token = _jwtService.GenerateToken(user!.UserName!, role);
 
         _logger.LogInformation("Paciente logueado exitosamente: {Email}", request.Email);
 

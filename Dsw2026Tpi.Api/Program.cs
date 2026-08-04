@@ -33,6 +33,7 @@ public class Program
             builder.Services.AddScoped<IDoctorService, DoctorService>();
             builder.Services.AddScoped<IDoctorAvailabilityService, DoctorAvailabilityService>();
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+            builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
             builder.Services.AddScoped<Dsw2026Tpi.Application.Interfaces.IAuthenticationService, Dsw2026Tpi.Application.Services.AuthenticationService>();
             builder.Services.AddMemoryCache();
             builder.Services.Configure<IpRateLimitOptions>(builder.Configuration.GetSection("IpRateLimiting"));

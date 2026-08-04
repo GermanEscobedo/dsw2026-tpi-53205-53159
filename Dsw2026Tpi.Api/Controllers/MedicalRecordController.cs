@@ -7,7 +7,7 @@ namespace Dsw2026Tpi.Api.Controllers;
 
 
 [Route("api/medical-records")]
-[Authorize(Roles = "Admin,Doctor")]
+[Authorize(Roles = "Admin,Doctor,Administrador,ADMINISTRADOR")]
 public class MedicalRecordController : ControllerBase
 {
     private readonly IMedicalRecordService _service;
@@ -55,7 +55,7 @@ public class MedicalRecordController : ControllerBase
         try
         {
             var newRecord = await _service.CreateAsync(model);
-            return CreatedAtAction(nameof(GetById), new { id = newRecord.Id }, newRecord);
+            return Ok(newRecord);
         }
         catch (Exception ex)
         {
@@ -69,7 +69,8 @@ public class MedicalRecordController : ControllerBase
         try
         {
             await _service.UpdateAsync(id, model);
-            return NoContent();
+            var updated = await _service.GetByIdAsync(id);
+            return Ok(updated);
         }
         catch (Exception ex)
         {
@@ -83,7 +84,7 @@ public class MedicalRecordController : ControllerBase
         try
         {
             await _service.DeleteAsync(id);
-            return NoContent();
+            return Ok("ok");
         }
         catch (Exception ex)
         {

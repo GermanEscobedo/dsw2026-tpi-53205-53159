@@ -7,7 +7,7 @@ namespace Dsw2026Tpi.Api.Controllers;
 
 
 [Route("api/patients")]
-[Authorize(Roles = "Admin,Doctor")]
+[Authorize(Roles = "Admin,Doctor,ADMINISTRADOR,Administrador")]
 public class PatientController : ControllerBase
 {
     private readonly IPatientService _patientService;
