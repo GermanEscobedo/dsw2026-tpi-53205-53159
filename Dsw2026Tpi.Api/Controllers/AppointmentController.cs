@@ -113,8 +113,8 @@ public class AppointmentController : ControllerBase
     {
         try
         {
-            await _service.DeleteAsync(id);
-            return Ok("ok"); 
+            await _service.CancelAsync(id);
+            return Ok("ok");
         }
         catch (Exception ex)
         {

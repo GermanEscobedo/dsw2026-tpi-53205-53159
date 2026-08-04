@@ -51,7 +51,8 @@ public class PatientController : ControllerBase
         try
         {
             await _patientService.UpdateAsync(id, model);
-            return NoContent(); // Retorna 204 
+            var updated = await _patientService.GetByIdAsync(id);
+            return Ok(updated); // Retorna 204 
         }
         catch (Exception ex)
         {
@@ -66,7 +67,7 @@ public class PatientController : ControllerBase
         try
         {
             await _patientService.DeleteAsync(id);
-            return NoContent(); // Retorna 204
+            return Ok("ok"); // Retorna 204
         }
         catch (Exception ex)
         {
